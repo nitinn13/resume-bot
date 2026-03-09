@@ -1,29 +1,28 @@
 import { Telegraf } from "telegraf";
 import dotenv from "dotenv";
 import { getGithubStats } from "./services/github";
+import { Markup } from "telegraf";
 
 dotenv.config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN!);
 
 bot.start((ctx) => {
-  ctx.reply(`
-👋 Hi! I'm Nitin's Resume Bot
+  ctx.reply(
+    `
+ 👋 Hi! I'm Nitin's Resume Bot
 
-You can explore Nitin's profile using these commands:
-
-/about
-/education
-/experience
-/skills
-/projects
-/achievements
-/github
-/contact
-/resume
-`);
+  You can explore Nitin's profile using these commands:`,
+    Markup.keyboard([
+      ["about", "education", "experience"],
+      ["projects", "achievements", "skills"],
+      ["GitHub", "Contact", "Resume"],
+    ]).resize()
+  );
 });
-bot.command("about", (ctx) => {
+
+
+bot.hears("about", (ctx) => {
   ctx.reply(`
 Nitin Kumar Jha
 
@@ -32,7 +31,8 @@ Full-stack developer focused on backend systems, Web3, and real-time application
 Currently building developer tools and distributed systems.
 `);
 });
-bot.command("github", (ctx) => {
+bot.hears("GitHub", (ctx) => {
+  console.log("Github called ");
     getGithubStats().then((github) => {
       ctx.reply(`GitHub Stats:
       Repositories: ${github.repos}
@@ -41,7 +41,7 @@ bot.command("github", (ctx) => {
       Profile: ${github.profile}`);
     });
 });
-bot.command("education", (ctx) => {
+bot.hears("education", (ctx) => {
   ctx.reply(`
 🎓 Education
 
@@ -51,7 +51,7 @@ B.Tech CSE — Bennett University
 CGPA: 8.62
 `);
 });
-bot.command("experience", (ctx) => {
+bot.hears("experience", (ctx) => {
   ctx.reply(`
 💼 Experience
 
@@ -63,7 +63,7 @@ July 2025 – Sept 2025
 • Integrated Solana for automated on-chain bounty payouts
 `);
 });
-bot.command("skills", (ctx) => {
+bot.hears("skills", (ctx) => {
   ctx.reply(`
 ⚙ Skills
 
@@ -80,7 +80,7 @@ Tools
 Docker, AWS, Git, Postman, Cloudflare
 `);
 });
-bot.command("projects", (ctx) => {
+bot.hears("projects", (ctx) => {
   ctx.reply(`
 🚀 Projects
 
@@ -155,8 +155,11 @@ Features:
 • React + TypeScript analytics
 `);
   }
+  else {
+    ctx.reply("Please specify a project: draft, wallet, or nadinetra");
+  }
 });
-bot.command("achievements", (ctx) => {
+bot.hears("achievements", (ctx) => {
   ctx.reply(`
 🏆 Achievements
 
@@ -167,7 +170,7 @@ bot.command("achievements", (ctx) => {
 🚀 Presented startup idea at IIT Bombay E-Cell event at IIT Delhi
 `);
 });
-bot.command("contact", (ctx) => {
+bot.hears("Contact", (ctx) => {
   ctx.reply(`
 📬 Contact
 
@@ -188,10 +191,28 @@ https://www.linkedin.com/in/nitin-kumar-jha/
 `);
 });
 
-bot.command("resume", (ctx) => {
+bot.hears("Resume", (ctx) => {
   ctx.replyWithDocument({ url: "https://drive.google.com/file/d/161TF8Pm9qbnRML21FJemRKjQqfKN2FZj/view" });
 });
+bot.hears("nitin", (ctx)=>{
+  ctx.reply("Hi nitin ik it's you!")
+})
+bot.hears("Help", (ctx) => {
+  ctx.reply(`
+Available Commands
 
+/about
+/education
+/experience
+/skills
+/projects
+/project <name>
+/achievements
+/github
+/contact
+/resume
+`);
+});
 bot.launch();
 
 console.log("Bot running...");
