@@ -1,6 +1,6 @@
 import { Telegraf } from "telegraf";
 import dotenv from "dotenv";
-import { getGithubStats } from "./services/github";
+import { getGithubRepos, getGithubStats, getLatestActivity } from "./services/github";
 import { Markup } from "telegraf";
 
 dotenv.config();
@@ -40,6 +40,29 @@ bot.hears("GitHub", (ctx) => {
       Following: ${github.following}
       Profile: ${github.profile}`);
     });
+});
+// bot.hears("GitHubRepos", (ctx) => {
+//   console.log("Github called ");
+//     const repos = getGithubRepos();
+//     ctx.reply(`GitHub Repos:
+//     ${repos.map((repo: any) => repo.name).join("\n")}`);
+// });
+
+
+bot.hears("activity", async (ctx) => {
+  try {
+    const activities = await getLatestActivity();
+
+    let message = "🔥 Latest GitHub Activity\n\n";
+
+    activities.forEach((a : any) => {
+      message += `• ${a}\n`;
+    });
+
+    ctx.reply(message);
+  } catch (err) {
+    ctx.reply("Unable to fetch GitHub activity.");
+  }
 });
 bot.hears("education", (ctx) => {
   ctx.reply(`
